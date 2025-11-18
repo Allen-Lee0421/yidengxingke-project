@@ -73,11 +73,7 @@
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = '<p>正在檢查權限並進行運算...</p>';
             
-            // 檢查輸入是否完整
-            if (!user_id || !name || !birth_date || !service_type) {
-                resultDiv.innerHTML = '<p class="error">❌ 請確保所有欄位都已填寫！</p>';
-                return;
-            }
+           
 
             const data = { user_id, name, birth_date, service_type };
 

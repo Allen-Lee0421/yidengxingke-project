@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會員中心 | 易燈星科</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .auth-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 50px 0;
+        }
+        .form-box {
+            width: 40%;
+            padding: 30px;
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            background-color: var(--bg-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        .form-box h3 {
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .form-box input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .form-message.success { background-color: #e6ffe6; color: green; }
+        .form-message.error { background-color: #ffe6e6; color: red; }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <h1 class="site-title">會員中心</h1> 
+        <nav>
+            <a href="index.html">首頁 (卷軸)</a>
+            <a href="yijing.html">易經占卜</a>
+            <a href="qimen.html">奇門遁甲</a>
+            <a href="name.html">姓名學</a>
+            <a href="product.html">商品服務</a>
+            <a href="member.html">會員中心</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h2>👤 會員中心</h2>
+        <div class="auth-container">
+            <div class="form-box" id="login-box">
+                <h3>會員登入</h3>
+                <form id="login-form">
+                    <input type="text" name="username" placeholder="用戶名" required>
+                    <input type="password" name="password" placeholder="密碼" required>
+                    <button type="submit">登入</button>
+                    <div id="login-message" class="form-message"></div>
+                </form>
+            </div>
+
+            <div class="form-box" id="register-box">
+                <h3>新會員註冊</h3>
+                <form id="register-form">
+                    <input type="text" name="username" placeholder="用戶名 (必填)" required>
+                    <input type="email" name="email" placeholder="電子郵件 (必填)" required>
+                    <input type="password" name="password" placeholder="密碼 (必填)" required>
+                    <button type="submit">註冊</button>
+                    <div id="register-message" class="form-message"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2025 易燈星科. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_URL = '/yidengxingke/backend/api.php'; 
+
+            /**
+             * 處理表單提交
+             * @param {HTMLFormElement} form 表單元素
+             * @param {string} action API 動作 ('login' 或 'register')
+             * @param {HTMLElement} messageElement 顯示訊息的元素
+             */
+            const handleFormSubmit = async (form, action, messageElement) => {
+                const formData = new FormData(form);
+                formData.append('action', action);
+                
+                messageElement.textContent = '處理中...';
+                messageElement.className = 'form-message';
+
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        messageElement.textContent = data.message;
+                        messageElement.className = 'form-message success';
+                        form.reset();
+                        // 登入成功後通常會跳轉或儲存 token
+                        if (action === 'login') {
+                           // 範例：簡單地在前端存儲用戶名
+                           localStorage.setItem('username', data.username);
+                           alert(`登入成功！歡迎 ${data.username}`);
+                           // window.location.href = 'index.html'; // 實際應跳轉
+                        }
+                    } else {
+                        messageElement.textContent = data.message;
+                        messageElement.className = 'form-message error';
+                    }
+                } catch (error) {
+                    messageElement.textContent = '伺服器連線錯誤。';
+                    messageElement.className = 'form-message error';
+                }
+            };
+
+            // 綁定註冊表單
+            const registerForm = document.getElementById('register-form');
+            const registerMessage = document.getElementById('register-message');
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                handleFormSubmit(registerForm, 'register', registerMessage);
+            });
+
+            // 綁定登入表單
+            const loginForm = document.getElementById('login-form');
+            const loginMessage = document.getElementById('login-message');
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                handleFormSubmit(loginForm, 'login', loginMessage);
+            });
+        });
+    </script>
+</body>
+</html>

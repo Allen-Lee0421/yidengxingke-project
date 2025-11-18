@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>易燈星科 - 諸葛孔明主題命理網站</title>
+    <link rel="stylesheet" href="../assets/css/style.css"> 
+    <style>
+        /* 為了演示，將卷軸區塊設為隱藏，等待 JS 觸發顯示 */
+        .scroll-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .scroll-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* 區塊樣式微調 */
+        .yijing-intro, .qimen-intro, .name-intro {
+            /* 假設在 style.css 中定義了 --secondary-color (深紅/強調色) */
+            border-left: 5px solid var(--secondary-color, #8B0000); 
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <h1 class="site-title">易燈星科</h1> 
+        
+        <nav>
+            <a href="index.html">首頁 (卷軸)</a>
+            <a href="yijing.html">易經占卜</a>
+            <a href="qimen.html">奇門遁甲</a>
+            <a href="name.html">姓名學</a>
+            <a href="product.html">商品服務</a>
+            <a href="member.html">會員中心</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="hero-section">
+            <h2>💡 知天命，掌先機 - 承繼孔明智慧 💡</h2>
+            <p>融合易學精華，以數據運算助您洞察人生方向，決策未來。</p>
+            <button onclick="window.location.href='yijing.html'">立即展開智慧旅程</button>
+        </section>
+        
+        <hr> <section class="scroll-section yijing-intro">
+            <h3>🔮 易經：宇宙變化的法則 🔮</h3>
+            <p>易經涵蓋了天、地、人三才之道，六十四卦象窮盡了世間萬物的變化規律。透過銅錢起卦或數字起卦，我們能解析當前局勢的吉凶悔吝，以求趨吉避凶。</p>
+            <p>這是您開啟天機的第一步。</p>
+        </section>
+
+        <section class="scroll-section qimen-intro">
+            <h3>🗺️ 奇門遁甲：時空運籌帷幄之術 🗺️</h3>
+            <p>奇門遁甲被譽為帝王之學，是最高層次的預測學，能將時間、空間、人事物納入一個大局，推演出最佳的行動方位和時機。本系統能即時生成專業奇門盤。</p>
+        </section>
+
+        <section class="scroll-section name-intro">
+            <h3>🔤 姓名學：個人命運的微言大義 🔤</h3>
+            <p>從您的姓名筆劃、五行配置中，分析出個性特質、事業財運與婚姻關係。姓名不僅是代號，更是影響您一生命運的能量場。</p>
+        </section>
+        
+        <section class="scroll-section product-preview">
+            <h3>🛍️ 命理服務與產品</h3>
+            <p>提供客製化八字五行財運分析、年度運勢解析、風水佈局產品等專業服務。點擊進入商品頁面查看詳情。</p>
+            <a href="product.html">查看所有服務</a>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2025 易燈星科. All rights reserved. | <a href="contact.html">聯絡我們</a></p>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

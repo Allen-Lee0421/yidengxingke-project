@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>易燈星科 - 命理運算服務 (最終測試版)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 50px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { color: #007bff; text-align: center; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input[type="text"], input[type="date"], select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; transition: background-color 0.3s ease; }
+        button:hover { background-color: #218838; }
+        #result { margin-top: 30px; padding: 20px; background-color: #e9ecef; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 易燈星科 - 紫微斗數服務</h1>
+        <p>（當前伺服器運行於：<b id="server-port">3000</b> 端口）</p>
+
+        <form id="numerology-form">
+            <div class="form-group">
+                <label for="user_id">用戶ID (測試用，請輸入 1-10 任意數字):</label>
+                <input type="text" id="user_id" value="1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="name">姓名:</label>
+                <input type="text" id="name" placeholder="請輸入姓名" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="birth_date">出生日期 (公曆):</label>
+                <input type="date" id="birth_date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="service_type">服務類型:</label>
+                <select id="service_type" required>
+                    <option value="免費流年">免費流年 (測試)</option>
+                    <option value="紫微斗數詳批">紫微斗數詳批 (付費服務)</option>
+                </select>
+            </div>
+            
+            <button type="submit">開始運算</button>
+        </form>
+
+        <div id="result">
+            <p>運算結果將顯示在這裡...</p>
+        </div>
+    </div>
+
+    <script>
+        // 伺服器端口，與 PowerShell 顯示的保持一致
+        const PORT = 3000;
+        document.getElementById('server-port').textContent = PORT;
+
+        // 🚨 關鍵修正：監聽表單提交事件，確保 API 被呼叫
+        document.getElementById('numerology-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // 阻止表單預設的提交和頁面重載
+            calculateNumerology();
+        });
+
+        async function calculateNumerology() {
+            const user_id = document.getElementById('user_id').value;
+            const name = document.getElementById('name').value;
+            const birth_date = document.getElementById('birth_date').value;
+            const service_type = document.getElementById('service_type').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>正在檢查權限並進行運算...</p>';
+            
+            // 檢查輸入是否完整
+            if (!user_id || !name || !birth_date || !service_type) {
+                resultDiv.innerHTML = '<p class="error">❌ 請確保所有欄位都已填寫！</p>';
+                return;
+            }
+
+            const data = { user_id, name, birth_date, service_type };
+
+            try {
+                // 1. 檢查權限 (呼叫後端 API)
+                let response = await fetch(`http://localhost:${PORT}/api/numerology/check`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                // 檢查 HTTP 狀態碼
+                if (!response.ok) {
+                    throw new Error(`API 檢查失敗，狀態碼: ${response.status}`);
+                }
+                
+                let checkResult = await response.json();
+
+                if (checkResult.status === 'UNAUTHORIZED') {
+                    // 權限不足，模擬付費流程
+                    resultDiv.innerHTML = `<p class="error">❌ 權限不足: ${checkResult.message}</p>
+                                          <p>為 ${service_type} 模擬創建訂單...</p>`;
+                    
+                    const orderData = { user_id, amount: 1288.00, service_name: service_type };
+                    
+                    let paymentResponse = await fetch(`http://localhost:${PORT}/api/payment/create`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(orderData)
+                    });
+                    
+                    if (!paymentResponse.ok) {
+                        throw new Error(`API 付費創建失敗，狀態碼: ${paymentResponse.status}`);
+                    }
+                    
+                    let paymentResult = await paymentResponse.json();
+
+                    resultDiv.innerHTML += `<p>✅ 模擬訂單創建成功! 訂單 ID: ${paymentResult.orderId}</p>
+                                            <p>請模擬導向金流 (${paymentResult.redirectTo}) 付款...</p>
+                                            <p>--- 付款後請刷新此頁面重試 ---</p>`;
+                    return;
+
+                } else if (checkResult.status === 'AUTHORIZED') {
+                    // 2. 權限通過，執行運算
+                    resultDiv.innerHTML += '<p>✅ 權限通過，開始運算...</p>';
+                    
+                    response = await fetch(`http://localhost:${PORT}/api/numerology/calculate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                     if (!response.ok) {
+                        throw new Error(`API 運算失敗，狀態碼: ${response.status}`);
+                    }
+                    
+                    let finalResult = await response.json();
+
+                    if (finalResult.status === 'SUCCESS') {
+                        // 3. 顯示最終結果
+                        resultDiv.innerHTML = `<h2>🔮 ${finalResult.service} 結果</h2>
+                                               <p><strong>輸入資料：</strong> 姓名: ${finalResult.data.input.name}, 生日: ${finalResult.data.input.birth_date}</p>
+                                               <hr>
+                                               <p>${finalResult.data.prediction}</p>
+                                               <p style="margin-top: 15px;"><a href="${finalResult.data.chart_url}" target="_blank">查看模擬星盤圖</a></p>`;
+                    } else {
+                         resultDiv.innerHTML = `<p class="error">❌ 運算失敗: ${finalResult.message || '未知錯誤'}</p>`;
+                    }
+                }
+
+            } catch (error) {
+                console.error('發生致命錯誤:', error);
+                // 顯示更準確的錯誤信息
+                resultDiv.innerHTML = `<p class="error">❌ 連線錯誤: ${error.message}</p>
+                                      <p class="error">請確認 PowerShell 視窗中的 Node.js 伺服器是否在運行。</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -2,65 +2,46 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>智謀採集矩陣 · 易鑒星科</title>
+    <title>易鑒星科 · Edison Star Strategic Intelligence</title>
     <style>
-        :root { --gold: #d4af37; --bg: #0a0a0a; --red: #b22222; }
-        body { background: var(--bg); color: #fff; font-family: "Noto Serif TC", serif; padding: 20px; }
-        .form-wrap { max-width: 600px; margin: 40px auto; border: 1px solid var(--gold); padding: 40px; background: rgba(20,20,20,0.9); box-shadow: 0 0 30px rgba(212,175,55,0.2); }
-        h2 { color: var(--gold); text-align: center; letter-spacing: 5px; font-size: 2em; }
-        .field { margin-bottom: 25px; }
-        label { display: block; color: var(--gold); margin-bottom: 10px; font-size: 1.1em; }
-        input, select, textarea { width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #444; color: #fff; font-size: 1em; box-sizing: border-box; border-radius: 4px; }
-        input:focus { border-color: var(--gold); outline: none; }
-        .price-display { background: rgba(178,34,34,0.1); padding: 15px; border: 1px dashed var(--red); margin-bottom: 25px; text-align: center; color: var(--gold); font-weight: bold; }
-        .btn-start { width: 100%; padding: 20px; background: transparent; border: 2px solid var(--gold); color: var(--gold); font-size: 1.3em; cursor: pointer; transition: 0.4s; letter-spacing: 2px; }
-        .btn-start:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold); }
+        :root { --gold: #d4af37; --white: #e0e0e0; }
+        body { margin: 0; padding: 0; transition: background-image 2.5s ease-in-out; background-size: cover; background-position: center; background-attachment: fixed; min-height: 100vh; font-family: "Noto Serif TC", serif; color: var(--white); overflow-x: hidden; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.75); z-index: -1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 80px 40px; text-align: center; }
+        h1 { color: var(--gold); letter-spacing: 20px; font-size: 4em; margin-bottom: 10px; text-shadow: 0 0 20px rgba(212,175,55,0.4); }
+        .subtitle { color: var(--gold); letter-spacing: 5px; font-size: 1.2em; margin-bottom: 60px; opacity: 0.8; }
+        .section-text { text-align: justify; line-height: 2.4; font-size: 1.2em; margin-bottom: 60px; color: #ddd; letter-spacing: 1px; }
+        .info-box { border-top: 1px solid rgba(212,175,55,0.3); border-bottom: 1px solid rgba(212,175,55,0.3); padding: 40px 0; margin-bottom: 60px; }
+        .tool-matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; text-align: left; margin-bottom: 60px; }
+        .tool-card { padding: 20px; background: rgba(255,255,255,0.03); border-left: 4px solid var(--gold); }
+        .tool-card h3 { color: var(--gold); font-size: 1.5em; margin: 0 0 10px 0; }
+        .btn-enter { border: 1px solid var(--gold); color: var(--gold); padding: 20px 80px; display: inline-block; font-size: 1.5em; cursor: pointer; text-decoration: none; transition: 0.5s; letter-spacing: 5px; background: transparent; }
+        .btn-enter:hover { background: var(--gold); color: #000; box-shadow: 0 0 50px rgba(212,175,55,0.4); }
     </style>
 </head>
-<body>
-    <div class="form-wrap">
-        <h2>數據錄入 · Data Entry</h2>
-        <form onsubmit="event.preventDefault(); goToPay();">
-            <div class="field">
-                <label>受測者姓名 (Full Name / Name for Child)</label>
-                <input type="text" id="pName" placeholder="中文全名或英文姓名" required>
-            </div>
-            <div class="field">
-                <label>服務項目 (Service Select)</label>
-                <select id="pService" onchange="updatePrice()">
-                    <option value="1280">原名鑑定 (Analytic) - NT$ 1,280</option>
-                    <option value="3300">六壬速斷 (Quick Detect) - NT$ 3,300</option>
-                    <option value="3600">星火計畫 (新生命取名優待) - NT$ 3,600</option>
-                    <option value="8800">姓名取名/改名 (Rename) - NT$ 8,800</option>
-                    <option value="19100">奇門大局佈局 (Strategic) - NT$ 19,100</option>
-                    <option value="36000">易經大略決策 (Macro) - NT$ 36,000</option>
-                </select>
-            </div>
-            <div class="field">
-                <label>西元出生日期 (Date of Birth)</label>
-                <input type="date" id="pDate" required>
-                <small style="color:#888;">* 系統將自動根據 5592 數據庫進行節氣校正</small>
-            </div>
-            <div class="field">
-                <label>出生時辰 (Birth Hour)</label>
-                <select id="pHour">
-                    <option value="子">子時 (23-01)</option><option value="丑">丑時 (01-03)</option>
-                    <option value="寅">寅時 (03-05)</option><option value="卯">卯時 (05-07)</option>
-                    <option value="辰">辰時 (07-09)</option><option value="巳">巳時 (09-11)</option>
-                    <option value="午">午時 (11-13)</option><option value="未">未時 (13-15)</option>
-                    <option value="申">申時 (15-17)</option><option value="酉">酉時 (17-19)</option>
-                    <option value="戌">戌時 (19-21)</option><option value="亥">亥時 (21-23)</option>
-                </select>
-            </div>
-            <div class="field">
-                <label>密傳意見欄 (Confidential Message)</label>
-                <textarea id="pMessage" rows="4" placeholder="僅您與總監可見，請輸入具體困惑或商業現況..."></textarea>
-            </div>
-            <button type="submit" class="btn-start">啟動數據對沖與支付驗證</button>
-        </form>
+<body id="dynamic-bg">
+    <div class="container">
+        <h1>易鑒星科</h1>
+        <div class="subtitle">Edison Star · Strategic Intelligence</div>
+        <div class="section-text">
+            自上古伏羲觀象而立卦，文王演繹六十四卦，孔子撰《十翼》以定大道，天地陰陽之理遂藏於易經之中；春秋之際，孫武以兵法揭示「兵者，詭道也」，將變化之理化為制勝之謀；三國之世，孔明承易理而融兵法，善用奇門遁甲，洞察天時地利人和，決勝千里之外；六壬神課以因果推演人事，姓名之學以字音五行定性格與命運，皆為先祖智慧之延伸。今日之世，科學演算與邏輯推理已能將隱秘的推演化為精密的模型，將模糊的直覺轉化為清晰的答案。本網「易鑒星科」正是承接此脈絡：以易為根，以兵法為骨，以謀略為翼，融奇門、六壬、姓名之學，結合科學之精密。於古今交融之中，洞察天地人事，掌握人生之機，為世人揭示隱而未顯的方向。
+        </div>
+        <div class="info-box">
+            <p style="font-size: 1.2em; line-height: 2;">一甲子六十年，術數不再只是玄學，而是可驗證、可應用的時空演算智慧。<br>
+            易鑒星科核心以科學方法，將近五百年來 <strong>5,592 筆干支數據</strong> 精密標註，涵蓋經濟轉折與國運興衰。</p>
+        </div>
+        <div class="tool-matrix">
+            <div class="tool-card"><h3>易經</h3><p>宏觀決策，洞察週期，為人生與事業提供哲理參考。</p></div>
+            <div class="tool-card"><h3>奇門遁甲</h3><p>帝王之學，時空戰略佈局，適用於重大抉擇與創業。</p></div>
+            <div class="tool-card"><h3>姓名學</h3><p>能量調整，補足八字不足，提升人際與事業運勢。</p></div>
+            <div class="tool-card"><h3>六壬</h3><p>精密推演人事因果，適合臨時斷事與短期決策。</p></div>
+        </div>
+        <a href="prediction.html" class="btn-enter">進入 2026 全球局勢鑑定中心</a>
     </div>
     <script>
-        function goToPay() { window.location.href = "pay.html"; }
+        const imgs = ['bg2.jpg','bg3.jpg','bg4.jpg','bg5.jpg','bg6.jpg','bg7.jpg'];
+        let i=0; function changeBG() { document.getElementById('dynamic-bg').style.backgroundImage = `url('${imgs[i]}')`; i = (i + 1) % imgs.length; }
+        changeBG(); setInterval(changeBG, 90000);
     </script>
 </body>
 </html>

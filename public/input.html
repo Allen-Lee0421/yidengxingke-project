@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>智謀採集矩陣 · 易鑒星科</title>
+    <style>
+        :root { --gold: #d4af37; --bg: #0a0a0a; --red: #b22222; }
+        body { background: var(--bg); color: #fff; font-family: "Noto Serif TC", serif; padding: 20px; }
+        .form-wrap { max-width: 600px; margin: 40px auto; border: 1px solid var(--gold); padding: 40px; background: rgba(20,20,20,0.9); box-shadow: 0 0 30px rgba(212,175,55,0.2); }
+        h2 { color: var(--gold); text-align: center; letter-spacing: 5px; font-size: 2em; }
+        .field { margin-bottom: 25px; }
+        label { display: block; color: var(--gold); margin-bottom: 10px; font-size: 1.1em; }
+        input, select, textarea { width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #444; color: #fff; font-size: 1em; box-sizing: border-box; border-radius: 4px; }
+        input:focus { border-color: var(--gold); outline: none; }
+        .price-display { background: rgba(178,34,34,0.1); padding: 15px; border: 1px dashed var(--red); margin-bottom: 25px; text-align: center; color: var(--gold); font-weight: bold; }
+        .btn-start { width: 100%; padding: 20px; background: transparent; border: 2px solid var(--gold); color: var(--gold); font-size: 1.3em; cursor: pointer; transition: 0.4s; letter-spacing: 2px; }
+        .btn-start:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold); }
+    </style>
+</head>
+<body>
+    <div class="form-wrap">
+        <h2>數據錄入 · Data Entry</h2>
+        <form onsubmit="event.preventDefault(); goToPay();">
+            <div class="field">
+                <label>受測者姓名 (Full Name / Name for Child)</label>
+                <input type="text" id="pName" placeholder="中文全名或英文姓名" required>
+            </div>
+            <div class="field">
+                <label>服務項目 (Service Select)</label>
+                <select id="pService" onchange="updatePrice()">
+                    <option value="1280">原名鑑定 (Analytic) - NT$ 1,280</option>
+                    <option value="3300">六壬速斷 (Quick Detect) - NT$ 3,300</option>
+                    <option value="3600">星火計畫 (新生命取名優待) - NT$ 3,600</option>
+                    <option value="8800">姓名取名/改名 (Rename) - NT$ 8,800</option>
+                    <option value="19100">奇門大局佈局 (Strategic) - NT$ 19,100</option>
+                    <option value="36000">易經大略決策 (Macro) - NT$ 36,000</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>西元出生日期 (Date of Birth)</label>
+                <input type="date" id="pDate" required>
+                <small style="color:#888;">* 系統將自動根據 5592 數據庫進行節氣校正</small>
+            </div>
+            <div class="field">
+                <label>出生時辰 (Birth Hour)</label>
+                <select id="pHour">
+                    <option value="子">子時 (23-01)</option><option value="丑">丑時 (01-03)</option>
+                    <option value="寅">寅時 (03-05)</option><option value="卯">卯時 (05-07)</option>
+                    <option value="辰">辰時 (07-09)</option><option value="巳">巳時 (09-11)</option>
+                    <option value="午">午時 (11-13)</option><option value="未">未時 (13-15)</option>
+                    <option value="申">申時 (15-17)</option><option value="酉">酉時 (17-19)</option>
+                    <option value="戌">戌時 (19-21)</option><option value="亥">亥時 (21-23)</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>密傳意見欄 (Confidential Message)</label>
+                <textarea id="pMessage" rows="4" placeholder="僅您與總監可見，請輸入具體困惑或商業現況..."></textarea>
+            </div>
+            <button type="submit" class="btn-start">啟動數據對沖與支付驗證</button>
+        </form>
+    </div>
+    <script>
+        function goToPay() { window.location.href = "pay.html"; }
+    </script>
+</body>
+</html>

@@ -1,6 +1,14 @@
-# 忽略安裝的模組
-/node_modules
-# 忽略敏感的環境變數檔案 (包含密碼)
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# 環境設定
 .env
-# 忽略 SQLite 資料庫檔案
-*.db
+
+# SQLite 資料庫
+yidengxingke.db
+
+# 系統檔案
+.DS_Store
+Thumbs.db

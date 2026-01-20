@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>命理鎖定牆</title>
+  <style>
+    body { font-family: "微軟正黑體"; background-color: #f9f9f9; text-align: center; padding: 50px; }
+    #locked { background-color: #fff3cd; padding: 30px; border: 2px dashed #ffa500; }
+    #result { display: none; background-color: #e6ffe6; padding: 30px; border: 2px solid #28a745; margin-top: 20px; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div id="locked">
+    <h2>🔒 命理結果已鎖定</h2>
+    <p>請完成付款以解鎖您的命理分析。</p>
+    <button onclick="unlock()">💰 付款解鎖</button>
+  </div>
+
+  <div id="result">
+    <h2>📜 命理結果</h2>
+    <p>您今日五行偏木，宜靜不宜動。午後時辰有貴人星動，適合決策。</p>
+  </div>
+
+  <script>
+  async function unlock() {
+    try {
+      const res = await fetch('/unlock', { method: 'POST' });
+      const data = await res.json();
+
+      if (data.success) {
+        document.getElementById("locked").style.display = "none";
+        document.getElementById("result").style.display = "block";
+      } else {
+        alert("付款尚未完成，請稍候或重新嘗試。");
+      }
+    } catch (err) {
+      alert("連線錯誤，請稍後再試。");
+    }
+  }
+</script>
+</body>
+</html>

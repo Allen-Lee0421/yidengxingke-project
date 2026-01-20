@@ -1,25 +1,17 @@
 {
-  "name": "yidengxingke",
-  "version": "1.0.0",
-  "description": "易燈星科 - 命理堪輿主題網站",
+  "name": "edison-star-final",
+  "version": "9.0.0",
+  "description": "易鑒星科 · 智謀鑑定系統",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": [
-    "yijing",
-    "qimendunjia",
-    "numerology"
-  ],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "dotenv": "^17.2.3",
-    "express": "^4.21.2",
-    "helmet": "^8.1.0",
-    "mongoose": "^8.19.4",
-    "play-sound": "^1.1.6",
-    "sequelize": "^6.37.7",
-    "sqlite3": "^5.1.7"
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "body-parser": "^1.20.2",
+    "crypto-js": "^4.1.1",
+    "pdfkit": "^0.13.0",
+    "cors": "^2.8.5"
   }
 }

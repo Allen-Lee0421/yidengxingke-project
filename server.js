@@ -1,55 +1,36 @@
-// server.js - 程式夥伴 V6.0：加入命理運算路由 (Numerology API)
-
-// 導入核心模組
+const express = require('express');
 const path = require('path');
-const express = require('express');
-const helmet = require('helmet'); 
-// 導入資料庫實例
-// ... (保持第 1 行到第 5 行不變)
-const express = require('express');
-const helmet = require('helmet'); 
-// // 導入資料庫實例 (舊的 SQLite 邏輯已註釋或刪除)
-// const sequelize = require('./db');  
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// 導入 Sequelize 核心模組
-const { Sequelize } = require('sequelize');
+// 模擬數據庫：5% 公益金與成交單數
+let stats = {
+    charity_fund: 0,
+    total_orders: 0
+};
 
-// 使用 Render 提供的 DATABASE_URL (PostgreSQL 連接字串)
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: 'postgres',
-    protocol: 'postgres',
-    // 必須啟用 SSL 以確保 Render 的連接安全性
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false
-        }
-    }
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 產品定價 API
+app.get('/api/pricing', (req, res) => {
+    res.json({
+        "quick_detect": 3300,   // 六壬速斷
+        "name_fix": 9900,      // 姓名定格
+        "strategic": 19100,    // 奇門佈局
+        "macro_outlook": 36000 // 易經大略
+    });
 });
 
-// 導入核心模型
-const User = require('./models/User'); 
-const Order = require('./models/Order'); 
-// ... (保持其他程式碼不變)
+// 公益透明盒數據接口
+app.get('/api/charity', (req, res) => {
+    res.json(stats);
+});
 
-// --- 資料庫連接與同步 ---
-User.hasMany(Order, { foreignKey: 'user_id' });
-Order.belongsTo(User, { foreignKey: 'user_id' });
+// 健康檢查接口
+app.get('/health', (req, res) => {
+    res.status(200).send('Edison Star System: Active');
+});
 
-async function initializeDatabase() {
-    try {
-        await sequelize.authenticate();
-        await sequelize.sync({ force: false }); 
-         
-        console.log('-----------------------------------------------------');
-        console.log('✅ 資料庫連接成功: PostgreSQL 雲端資料庫已連接!'); // <-- 修正輸出訊息
-        console.log('⭐ 核心表格已創建 (User, Order)!');
-        console.log('-----------------------------------------------------');
-        return true;
-    } catch (err) {
-        console.error('❌ 資料庫連接失敗或模型同步錯誤！');
-        console.error(err);
-        process.exit(1); 
-    }
-}
-// ... (保持伺服器啟動邏輯不變)
+app.listen(PORT, () => {
+    console.log(`易鑒星科伺服器已啟動：http://localhost:${PORT}`);
+});

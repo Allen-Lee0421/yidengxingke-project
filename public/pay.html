@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>金流驗證 · 易鑒星科</title>
+    <style>
+        :root { --gold: #d4af37; --bg: #0a0a0a; }
+        body { background: var(--bg); color: #fff; font-family: "Noto Serif TC", serif; padding: 40px; }
+        .pay-wrap { max-width: 750px; margin: 0 auto; border: 1px solid var(--gold); padding: 50px; background: #111; position: relative; }
+        .method-card { border: 1px solid #333; padding: 25px; margin-bottom: 30px; border-left: 5px solid var(--gold); }
+        .method-card h3 { color: var(--gold); margin: 0 0 15px 0; font-size: 1.4em; }
+        .bank-detail { font-family: 'Courier New', Courier, monospace; font-size: 1.3em; color: #fff; letter-spacing: 2px; }
+        .btn-paypal { background: #0070ba; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px; font-weight: bold; }
+        .disclaimer { font-size: 0.85em; color: #777; line-height: 1.8; text-align: justify; border-top: 1px solid #333; padding-top: 20px; }
+        .charity-banner { background: #b22222; color: white; padding: 10px; font-size: 0.9em; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="pay-wrap">
+        <div class="charity-banner">星燈公益積累中：本單 5% 營收將自動撥入公益透明盒</div>
+        <h2>金流驗證系統</h2>
+        
+        <div class="method-card">
+            <h3>🏦 ATM / 銀行轉帳 (國內推薦)</h3>
+            <p><strong>樂天國際銀行 (826)</strong><br><span class="bank-detail">81201001535981</span></p>
+            <p><strong>Line Bank (824)</strong><br><span class="bank-detail">111013844288</span></p>
+            <small style="color:var(--gold)">* 請於轉帳後妥善保存收據，鑑定報告將自動生成</small>
+        </div>
+
+        <div class="method-card">
+            <h3>💳 國際刷卡 / PayPal (Global)</h3>
+            <p>支援美金、歐元、日圓等各國幣別自動換算</p>
+            <a href="https://paypal.me/TaiwanPayment" target="_blank" class="btn-paypal">使用 PayPal / 信用卡支付</a>
+        </div>
+
+        <div class="disclaimer">
+            凡事均須天時、地利、人和，三合為關鍵。本平台鑑定報告係基於 5,592 筆干支數據演算之智謀參考，不構成法律或醫療建議。支付完成即代表您已閱讀並同意此免責聲明。
+        </div>
+        <br>
+        <button onclick="window.location.href='analysis.html'" style="background:none; border:1px solid #555; color:#555; cursor:pointer; padding:10px;">[ 模擬：支付完成，點擊產出報告 ]</button>
+    </div>
+</body>
+</html>

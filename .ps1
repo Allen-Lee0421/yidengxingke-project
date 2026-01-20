@@ -1,0 +1,1 @@
+New-Item -Path . -Name "run.ps1" -ItemType "File"

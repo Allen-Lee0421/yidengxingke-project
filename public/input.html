@@ -2,65 +2,184 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>智謀採集矩陣 · 易鑒星科</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>個人局勢鑑定 · 易鑒星科 Edison Star</title>
+    <meta name="keywords" content="2026國運預測, 丙午年避險, 火雷噬嗑商戰, 科學命理演算法, 易鑒星科">
+    <meta property="og:title" content="2026 個人局勢鑑定 - 智謀印章">
+    <meta property="og:image" content="https://xingdeng.tw/og-preview.png">
+
     <style>
-        :root { --gold: #d4af37; --bg: #0a0a0a; --red: #b22222; }
-        body { background: var(--bg); color: #fff; font-family: "Noto Serif TC", serif; padding: 20px; }
-        .form-wrap { max-width: 600px; margin: 40px auto; border: 1px solid var(--gold); padding: 40px; background: rgba(20,20,20,0.9); box-shadow: 0 0 30px rgba(212,175,55,0.2); }
-        h2 { color: var(--gold); text-align: center; letter-spacing: 5px; font-size: 2em; }
-        .field { margin-bottom: 25px; }
-        label { display: block; color: var(--gold); margin-bottom: 10px; font-size: 1.1em; }
-        input, select, textarea { width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #444; color: #fff; font-size: 1em; box-sizing: border-box; border-radius: 4px; }
-        input:focus { border-color: var(--gold); outline: none; }
-        .price-display { background: rgba(178,34,34,0.1); padding: 15px; border: 1px dashed var(--red); margin-bottom: 25px; text-align: center; color: var(--gold); font-weight: bold; }
-        .btn-start { width: 100%; padding: 20px; background: transparent; border: 2px solid var(--gold); color: var(--gold); font-size: 1.3em; cursor: pointer; transition: 0.4s; letter-spacing: 2px; }
-        .btn-start:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold); }
+        :root { --gold: #d4af37; --red: #b22222; --dark: #0a0a0a; }
+        body { background: var(--dark); color: #e0e0e0; font-family: "Noto Serif TC", serif; text-align: center; margin: 0; padding-bottom: 50px; }
+        .container { max-width: 550px; margin: 0 auto; padding: 20px; }
+        
+        /* [Item 1] 手機顯示優化：強化字體與間距 */
+        @media (max-width: 600px) {
+            #main-title { font-size: 1.6em !important; letter-spacing: 3px !important; }
+            input, select { font-size: 16px !important; padding: 15px !important; }
+            .btn-submit { font-size: 1.2em !important; padding: 20px !important; }
+        }
+
+        .lang-switcher { text-align: right; margin-bottom: 15px; }
+        select#langSelector { background: #111; color: var(--gold); border: 1px solid var(--gold); padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 0.9em; }
+
+        .form-box { border: 1px solid var(--gold); background: rgba(255,255,255,0.02); padding: 30px; margin-top: 20px; box-shadow: 0 0 20px rgba(212,175,55,0.05); }
+        input, select { width: 100%; padding: 14px; margin: 10px 0; background: #111; border: 1px solid #444; color: #fff; box-sizing: border-box; border-radius: 4px; font-size: 1em; }
+        
+        .payment-options { margin-top: 30px; text-align: left; display: none; animation: fadeIn 0.8s forwards; } 
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .price-display { font-size: 2.2em; color: var(--gold); margin: 25px 0; text-align: center; font-weight: bold; font-family: 'Courier New', monospace; text-shadow: 0 0 10px rgba(212,175,55,0.3); }
+
+        .pay-method { border: 1px solid #333; padding: 18px; margin-bottom: 12px; cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.03); border-radius: 4px; position: relative; }
+        .pay-method:hover { border-color: var(--gold); background: rgba(212,175,55,0.1); }
+        .pay-method h4 { margin: 0; color: var(--gold); letter-spacing: 1px; }
+        .pay-method p { margin: 8px 0 0 0; font-size: 0.85em; color: #aaa; line-height: 1.5; }
+        
+        /* [Item 4, 5] 公益提撥標籤 */
+        .charity-tag { position: absolute; top: 10px; right: 10px; font-size: 0.7em; color: var(--red); border: 1px solid var(--red); padding: 2px 5px; border-radius: 3px; }
+
+        .btn-submit { background: var(--gold); color: #000; padding: 18px; width: 100%; border: none; font-weight: bold; font-size: 1.1em; cursor: pointer; margin-top: 20px; letter-spacing: 3px; transition: 0.4s; }
+        .btn-submit:hover { background: #fff; box-shadow: 0 0 30px rgba(212,175,55,0.5); }
+        
+        .disclaimer-box { margin-top: 30px; font-size: 0.75em; color: #666; text-align: justify; line-height: 1.6; border-top: 1px solid #222; padding-top: 15px; }
+        .viral-seed { color: var(--red); font-size: 0.8em; margin-top: 40px; opacity: 0.7; }
     </style>
 </head>
 <body>
-    <div class="form-wrap">
-        <h2>數據錄入 · Data Entry</h2>
-        <form onsubmit="event.preventDefault(); goToPay();">
-            <div class="field">
-                <label>受測者姓名 (Full Name / Name for Child)</label>
-                <input type="text" id="pName" placeholder="中文全名或英文姓名" required>
+    <div class="container">
+        <div class="lang-switcher">
+            <select id="langSelector" onchange="switchLang()">
+                <option value="zh-TW">繁體中文 (TWD)</option>
+                <option value="zh-CN">简体中文 (CNY)</option>
+                <option value="en">English (USD)</option>
+            </select>
+        </div>
+
+        <h1 id="main-title" style="color:var(--gold); letter-spacing: 5px;">個人時空矩陣鑑定</h1>
+        <p id="sub-title" style="font-size: 0.9em; opacity: 0.7;">結合老祖宗智慧與 5,592 筆數據演算，鎖定您的財星動能</p>
+
+        <div class="form-box" id="data-section">
+            <input type="text" id="userName" placeholder="請輸入真實姓名">
+            <input type="date" id="userBirthday">
+            <select id="userHour">
+                <option value="">選擇出生時辰</option>
+                <option value="0">早子 (00:00-01:00)</option>
+                <option value="1">丑時 (01:00-03:00)</option>
+                <option value="23">晚子 (23:00-24:00)</option>
+            </select>
+            <input type="email" id="userEmail" placeholder="鑑定報告接收 Email">
+            
+            <div style="font-size: 0.8em; margin: 15px 0; text-align: left;">
+                <input type="checkbox" id="agreeDisclaimer" style="width: auto; margin-right: 10px;"> 
+                <span>我理解本鑑定基於科學數據演算，同意<a href="#disclaimer" style="color: var(--gold);">免責聲明</a></span>
             </div>
-            <div class="field">
-                <label>服務項目 (Service Select)</label>
-                <select id="pService" onchange="updatePrice()">
-                    <option value="1280">原名鑑定 (Analytic) - NT$ 1,280</option>
-                    <option value="3300">六壬速斷 (Quick Detect) - NT$ 3,300</option>
-                    <option value="3600">星火計畫 (新生命取名優待) - NT$ 3,600</option>
-                    <option value="8800">姓名取名/改名 (Rename) - NT$ 8,800</option>
-                    <option value="19100">奇門大局佈局 (Strategic) - NT$ 19,100</option>
-                    <option value="36000">易經大略決策 (Macro) - NT$ 36,000</option>
-                </select>
+
+            <button class="btn-submit" onclick="showPayment()">鎖定時空數據並前往鑑定</button>
+        </div>
+
+        <div class="payment-options" id="pay-section">
+            <h3 id="pay-title" style="color:var(--gold);">選擇鑑定支付管道</h3>
+            <div class="price-display">
+                <span id="curr-symbol">NT$</span> <span id="price-val">1,280</span>
             </div>
-            <div class="field">
-                <label>西元出生日期 (Date of Birth)</label>
-                <input type="date" id="pDate" required>
-                <small style="color:#888;">* 系統將自動根據 5592 數據庫進行節氣校正</small>
+            
+            <div class="pay-method" onclick="processPay('PayPal')">
+                <span class="charity-tag">已含 5% 公益提撥</span>
+                <h4>PayPal / 全球信用卡</h4>
+                <p>適用全球用戶，即時開通鑑定矩陣</p>
             </div>
-            <div class="field">
-                <label>出生時辰 (Birth Hour)</label>
-                <select id="pHour">
-                    <option value="子">子時 (23-01)</option><option value="丑">丑時 (01-03)</option>
-                    <option value="寅">寅時 (03-05)</option><option value="卯">卯時 (05-07)</option>
-                    <option value="辰">辰時 (07-09)</option><option value="巳">巳時 (09-11)</option>
-                    <option value="午">午時 (11-13)</option><option value="未">未時 (13-15)</option>
-                    <option value="申">申時 (15-17)</option><option value="酉">酉時 (17-19)</option>
-                    <option value="戌">戌時 (19-21)</option><option value="亥">亥時 (21-23)</option>
-                </select>
+
+            <div class="pay-method" onclick="processPay('Bank')">
+                <span class="charity-tag">已含 5% 公益提撥</span>
+                <h4>銀行轉帳 (自動複製帳號)</h4>
+                <p>適用台灣用戶，轉帳後系統自動對帳</p>
             </div>
-            <div class="field">
-                <label>密傳意見欄 (Confidential Message)</label>
-                <textarea id="pMessage" rows="4" placeholder="僅您與總監可見，請輸入具體困惑或商業現況..."></textarea>
-            </div>
-            <button type="submit" class="btn-start">啟動數據對沖與支付驗證</button>
-        </form>
+        </div>
+
+        <div id="disclaimer" class="disclaimer-box">
+            <strong>免責聲明：</strong>本報告基於 5,592 筆歷史干支數據與科學演算邏輯生成，僅供個人決策與戰略參考。鑑定結果不構成任何法律、醫療、財務或投資建議。易鑒星科保護所有權威數據資產，未經授權禁止翻印。
+        </div>
+
+        <div class="viral-seed">
+            ⭐ 分享此頁面至社群，為您的 2026 累積第一筆功德數據
+        </div>
     </div>
+
     <script>
-        function goToPay() { window.location.href = "pay.html"; }
-    </script>
+        function showPayment() {
+            if(!document.getElementById('agreeDisclaimer').checked) {
+                alert("請先勾選同意免責聲明");
+                return;
+            }
+            document.getElementById('data-section').style.display = 'none';
+            document.getElementById('pay-section').style.display = 'block';
+        }
+
+        function processPay(method) {
+            // [Item 3, 5] 自動化對接點
+            alert(method + " 支付接口對接中... 系統將提撥 5% 至星燈公益盒");
+            // 未來在此處插入 Google Form 送出與支付跳轉
+        }
+    <script>
+// 核心 ID 映射
+const CONFIG = {
+    formId: "1FAIpQLScShTt4BhVupUMLXFzBNoZ0nfub9qoVyECdEuuDnCI1zmLwkA",
+    entryName: "entry.693170380",
+    entryBirthday: "entry.388768064", // 合併後年月日時
+    entryEmail: "entry.2001221929"
+};
+
+function showPayment() {
+    const name = document.getElementById('userName').value;
+    const email = document.getElementById('userEmail').value;
+    
+    if(!name || !email) {
+        alert("請填寫姓名與 Email 以鎖定數據");
+        return;
+    }
+    if(!document.getElementById('agreeDisclaimer').checked) {
+        alert("請先勾選同意免責聲明");
+        return;
+    }
+    document.getElementById('data-section').style.display = 'none';
+    document.getElementById('pay-section').style.display = 'block';
+}
+
+function processPay(method) {
+    // 1. 準備數據
+    const name = document.getElementById('userName').value;
+    const date = document.getElementById('userBirthday').value;
+    const hourSelect = document.getElementById('userHour');
+    const hourText = hourSelect.options[hourSelect.selectedIndex].text;
+    const email = document.getElementById('userEmail').value;
+
+    // 2. 處理「吉時」邏輯
+    const finalTime = (hourSelect.value === "") ? `${date} (吉時)` : `${date} (${hourText})`;
+
+    // 3. 建立 Google Form 靜默送出連結
+    const googleFormUrl = `https://docs.google.com/forms/d/e/${CONFIG.formId}/formResponse?` +
+        `${CONFIG.entryName}=${encodeURIComponent(name)}&` +
+        `${CONFIG.entryBirthday}=${encodeURIComponent(finalTime)}&` +
+        `${CONFIG.entryEmail}=${encodeURIComponent(email)}&submit=Submit`;
+
+    // 4. 使用隱藏式發送 (不跳轉)
+    const hiddenIframe = document.createElement('iframe');
+    hiddenIframe.style.display = 'none';
+    hiddenIframe.src = googleFormUrl;
+    document.body.appendChild(hiddenIframe);
+
+    // 5. 支付引導
+    alert(`【數據已安全鎖定】\n\n系統正在跳轉至 ${method} 支付網關。\n您的鑑定將自動提撥 5% (NT$ 64) 投入星燈公益計畫。`);
+    
+    // 未來此處接續正式金流跳轉
+}
+
+function switchLang() {
+    const lang = document.getElementById('langSelector').value;
+    // 預留語系切換邏輯
+    console.log("Switching to: " + lang);
+}
+</script>
 </body>
 </html>

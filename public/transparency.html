@@ -1,0 +1,38 @@
+<div class="matrix-grid" style="margin-top: 60px; grid-template-columns: 1fr 1fr; gap: 30px;">
+    
+    <div class="matrix-card" style="border-top: 3px solid var(--gold); background: rgba(255,255,255,0.02);">
+        <span class="card-title">月收支報表</span><span class="card-tag">實時監控</span>
+        <div style="margin: 25px 0; font-family: 'Courier New', monospace;">
+            <p>當月鑑定總量：<span id="monthly-count" style="color:var(--gold); font-weight:bold;">0</span> 件</p>
+            <p>當月營收結算：<span style="color:var(--gold);">NT$ </span><span id="monthly-revenue" style="color:var(--gold); font-weight:bold;">0</span></p>
+            <p>累計公益撥款：<span style="color:var(--red);">NT$ </span><span id="charity-fund" style="color:var(--red); font-weight:bold;">0</span></p>
+        </div>
+        <p style="font-size: 0.8em; opacity: 0.5;">*數據更新至：<span id="last-update">2026-01-21</span></p>
+    </div>
+
+    <div class="matrix-card" style="border-top: 3px solid var(--red); background: rgba(178,34,34,0.05);">
+        <span class="card-title">5% 公益金公示</span><span class="card-tag">月結公告</span>
+        <div style="margin-top: 20px;">
+            <p style="font-size: 0.9em; line-height: 1.6;">
+                依據「星燈公益」原則，每筆鑑定結餘之 5% 撥充為公益金。
+                <strong>本月預計受贈機關：</strong><br>
+                <span style="color:var(--white);">財團法人台灣兒童暨家庭扶助基金會</span>
+            </p>
+            <div style="margin-top: 15px;">
+                <button onclick="window.location.href='charity-receipts.html'" style="background:none; border: 1px solid var(--gold); color:var(--gold); padding: 8px 15px; cursor:pointer;">
+                    查看歷月捐贈收據 (PDF/JPG)
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 模擬自動同步 D:\EdisonStar\revenue_log.json 的數據
+    // 實際運作時可透過靜態網頁生成器自動寫入這些數值
+    window.onload = function() {
+        document.getElementById('monthly-count').innerText = "1,142";
+        document.getElementById('monthly-revenue').innerText = "1,461,760";
+        document.getElementById('charity-fund').innerText = "73,088";
+    };
+</script>

@@ -3,45 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <title>易鑒星科 · Edison Star Strategic Intelligence</title>
+    
+    <meta name="keywords" content="2026國運預測, 丙午年避險, 火雷噬嗑商戰, 科學命理演算法, 易鑒星科, 奇門遁甲, 5592數據標註">
+    <meta name="description" content="結合 5,592 筆干支數據與現代科學演算法，傳承老祖宗智慧，為您解碼 2026 丙午年全球局勢與個人避險策略。">
+    
+    <meta property="og:title" content="2026 國運鑑定雷達圖 - 易鑒星科">
+    <meta property="og:description" content="預測火能噴發強度 95%，結合科學演算與古老智慧，立即鑑定您的個人避險矩陣。">
+    <meta property="og:image" content="https://xingdeng-tw.github.io/assets/img/og-preview.jpg">
+    <meta property="og:url" content="https://xingdeng-tw.github.io/index.html">
+
     <style>
-        :root { --gold: #d4af37; --white: #e0e0e0; }
-        body { margin: 0; padding: 0; transition: background-image 2.5s ease-in-out; background-size: cover; background-position: center; background-attachment: fixed; min-height: 100vh; font-family: "Noto Serif TC", serif; color: var(--white); overflow-x: hidden; }
-        body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.75); z-index: -1; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 80px 40px; text-align: center; }
-        h1 { color: var(--gold); letter-spacing: 20px; font-size: 4em; margin-bottom: 10px; text-shadow: 0 0 20px rgba(212,175,55,0.4); }
-        .subtitle { color: var(--gold); letter-spacing: 5px; font-size: 1.2em; margin-bottom: 60px; opacity: 0.8; }
-        .section-text { text-align: justify; line-height: 2.4; font-size: 1.2em; margin-bottom: 60px; color: #ddd; letter-spacing: 1px; }
-        .info-box { border-top: 1px solid rgba(212,175,55,0.3); border-bottom: 1px solid rgba(212,175,55,0.3); padding: 40px 0; margin-bottom: 60px; }
-        .tool-matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; text-align: left; margin-bottom: 60px; }
-        .tool-card { padding: 20px; background: rgba(255,255,255,0.03); border-left: 4px solid var(--gold); }
-        .tool-card h3 { color: var(--gold); font-size: 1.5em; margin: 0 0 10px 0; }
-        .btn-enter { border: 1px solid var(--gold); color: var(--gold); padding: 20px 80px; display: inline-block; font-size: 1.5em; cursor: pointer; text-decoration: none; transition: 0.5s; letter-spacing: 5px; background: transparent; }
-        .btn-enter:hover { background: var(--gold); color: #000; box-shadow: 0 0 50px rgba(212,175,55,0.4); }
+        :root { --gold: #d4af37; --white: #e0e0e0; --red: #b22222; }
+        body { margin: 0; padding: 0; min-height: 100vh; font-family: "Noto Serif TC", serif; color: var(--white); background-color: #000; overflow-x: hidden; }
+        
+        /* 動態背景層 */
+        #dynamic-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background-size: cover; background-position: center; transition: opacity 2s ease-in-out; }
+        #dynamic-bg::after { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.85); }
+        
+        .container { max-width: 950px; margin: 0 auto; padding: 80px 20px; text-align: center; position: relative; z-index: 1; }
+        .prologue-title { color: var(--gold); letter-spacing: 15px; font-size: 3em; margin-bottom: 20px; text-shadow: 0 0 30px rgba(212,175,55,0.4); }
+        
+        /* 核心內文區 */
+        .intro-section { text-align: justify; line-height: 2.2; letter-spacing: 2px; margin: 50px 0; }
+        .intro-section p { margin-bottom: 30px; font-size: 1.1em; }
+        .intro-section h2 { color: var(--gold); border-left: 4px solid var(--gold); padding-left: 20px; margin: 60px 0 30px 0; font-size: 1.8em; letter-spacing: 5px; }
+        
+        /* 科技矩陣網格 */
+        .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 50px 0; }
+        .tech-item { border: 1px solid rgba(212,175,55,0.3); padding: 30px; background: rgba(255,255,255,0.02); text-align: left; transition: 0.3s; }
+        .tech-item:hover { border-color: var(--gold); background: rgba(212,175,55,0.05); }
+        .tech-item h4 { color: var(--gold); margin: 0 0 15px 0; font-size: 1.3em; display: flex; align-items: center; }
+        .tech-item h4::before { content: "◈"; margin-right: 10px; font-size: 0.8em; }
+        .tech-item p { margin: 0; font-size: 1em; opacity: 0.8; line-height: 1.8; text-align: justify; }
+
+        /* 公益與信任區 */
+        .charity-box { border: 1px dashed var(--gold); padding: 35px; background: rgba(178,34,34,0.08); margin-top: 80px; border-radius: 4px; }
+        .charity-val { font-size: 3.5em; color: var(--gold); font-family: 'Courier New', monospace; font-weight: bold; margin: 15px 0; text-shadow: 0 0 20px rgba(212,175,55,0.6); }
+        .charity-link { color: var(--gold); font-size: 0.9em; text-decoration: underline; cursor: pointer; opacity: 0.7; transition: 0.3s; }
+        .charity-link:hover { opacity: 1; }
+
+        /* 入口按鈕 */
+        .btn-enter { display: inline-block; margin: 50px 0; padding: 25px 80px; border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-weight: bold; letter-spacing: 10px; font-size: 1.3em; transition: 0.5s; position: relative; overflow: hidden; }
+        .btn-enter:hover { background: var(--gold); color: #000; box-shadow: 0 0 50px rgba(212,175,55,0.7); }
+        
+        @media (max-width: 600px) {
+            .tech-grid { grid-template-columns: 1fr; }
+            .prologue-title { font-size: 2em; letter-spacing: 8px; }
+        }
     </style>
 </head>
-<body id="dynamic-bg">
+<body>
+    <div id="dynamic-bg"></div>
+    
     <div class="container">
-        <h1>易鑒星科</h1>
-        <div class="subtitle">Edison Star · Strategic Intelligence</div>
-        <div class="section-text">
-            自上古伏羲觀象而立卦，文王演繹六十四卦，孔子撰《十翼》以定大道，天地陰陽之理遂藏於易經之中；春秋之際，孫武以兵法揭示「兵者，詭道也」，將變化之理化為制勝之謀；三國之世，孔明承易理而融兵法，善用奇門遁甲，洞察天時地利人和，決勝千里之外；六壬神課以因果推演人事，姓名之學以字音五行定性格與命運，皆為先祖智慧之延伸。今日之世，科學演算與邏輯推理已能將隱秘的推演化為精密的模型，將模糊的直覺轉化為清晰的答案。本網「易鑒星科」正是承接此脈絡：以易為根，以兵法為骨，以謀略為翼，融奇門、六壬、姓名之學，結合科學之精密。於古今交融之中，洞察天地人事，掌握人生之機，為世人揭示隱而未顯的方向。
+        <h1 class="prologue-title">易鑒星科</h1>
+        <p style="opacity:0.6; letter-spacing:8px; font-size: 1em; margin-bottom: 60px;">EDISON STAR STRATEGIC INTELLIGENCE</p>
+        
+        <div class="intro-section">
+            <p>自上古伏羲觀象而立卦，文王演繹六十四卦，孔子撰《十翼》以定大道，天地陰陽之理遂藏於易經之中；春秋之際，孫武以兵法揭示「兵者，詭道也」，將變化之理化為制勝之謀；三國之世，孔明承易理而融兵法，善用奇門遁甲，洞察天時地利人和，決勝千里之外。這些流傳千年的<strong>老祖宗智慧</strong>，皆為對時空規律的深度洞察。</p>
+            
+            <p>今日之世，「易鑒星科」將此古典精髓與<strong>現代科學演算</strong>深度結合。我們不談空泛的直覺，而是將模糊的推演轉化為精密的邏輯模型。透過科學之精密與大數據歸納，我們在古今交融之中，為決策者揭示隱而未顯的戰略方向。</p>
+
+            <h2>科學演算簡介</h2>
+            <p>一甲子六十年，術數不再只是玄學，而是可驗證、可應用的 <strong>時空演算智慧</strong>。易鑒星科核心以科學方法，將近五百年來 <strong>5,592 筆干支數據</strong> 進行精密標註與交叉比對，涵蓋歷史法理重組、全球經濟轉折與國運興衰週期。</p>
+            <p>每一筆數據皆為閉環驗證，這不僅是術數的再造，亦是面對 2026 丙午年局勢時，決策者最冷峻、最理性的<strong>科學謀略參考</strong>。</p>
+
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h4>易經演算</h4>
+                    <p>針對長期週期進行宏觀洞察，協助定位人生重大方向與企業大局決策。</p>
+                </div>
+                <div class="tech-item">
+                    <h4>奇門戰略</h4>
+                    <p>精確時空佈局，適用於重大投資標的鎖定、商業談判與策略性擇日。</p>
+                </div>
+                <div class="tech-item">
+                    <h4>五行姓名</h4>
+                    <p>結合字音頻率與五行矩陣，針對個人命格與品牌形象進行精密調校。</p>
+                </div>
+                <div class="tech-item">
+                    <h4>六壬神課</h4>
+                    <p>針對短期突發事件進行斷測，追求決策的「快、狠、準」，預判事件走向。</p>
+                </div>
+            </div>
         </div>
-        <div class="info-box">
-            <p style="font-size: 1.2em; line-height: 2;">一甲子六十年，術數不再只是玄學，而是可驗證、可應用的時空演算智慧。<br>
-            易鑒星科核心以科學方法，將近五百年來 <strong>5,592 筆干支數據</strong> 精密標註，涵蓋經濟轉折與國運興衰。</p>
+
+        <a href="2026-outlook.html" class="btn-enter">進入 2026 國運鑑定矩陣</a>
+
+        <div class="charity-box">
+            <p style="letter-spacing: 4px; margin-bottom: 15px; font-weight: bold; color: var(--gold);">星燈公益積累盒 (Trust & Feedback)</p>
+            <div class="charity-val">NT$ <span id="charity-counter">0</span></div>
+            <p style="font-size: 1em; opacity: 0.8; margin-bottom: 20px;">每筆鑑定成交自動提撥 5%</p>
+            <span class="charity-link" onclick="location.href='charity.html'">檢視每月捐款收據與收支報表</span>
         </div>
-        <div class="tool-matrix">
-            <div class="tool-card"><h3>易經</h3><p>宏觀決策，洞察週期，為人生與事業提供哲理參考。</p></div>
-            <div class="tool-card"><h3>奇門遁甲</h3><p>帝王之學，時空戰略佈局，適用於重大抉擇與創業。</p></div>
-            <div class="tool-card"><h3>姓名學</h3><p>能量調整，補足八字不足，提升人際與事業運勢。</p></div>
-            <div class="tool-card"><h3>六壬</h3><p>精密推演人事因果，適合臨時斷事與短期決策。</p></div>
-        </div>
-        <a href="prediction.html" class="btn-enter">進入 2026 全球局勢鑑定中心</a>
     </div>
+
     <script>
-        const imgs = ['bg2.jpg','bg3.jpg','bg4.jpg','bg5.jpg','bg6.jpg','bg7.jpg'];
-        let i=0; function changeBG() { document.getElementById('dynamic-bg').style.backgroundImage = `url('${imgs[i]}')`; i = (i + 1) % imgs.length; }
-        changeBG(); setInterval(changeBG, 90000);
+        // 背景圖輪放邏輯 (確保路徑正確)
+        const bgList = ['bg2.jpg','bg3.jpg','bg4.jpg','bg5.jpg','bg6.jpg','bg7.jpg'];
+        let bIdx = 0;
+        const bgEl = document.getElementById('dynamic-bg');
+
+        function rotateBG(){
+            if(bgEl) {
+                // 預載圖片以確保切換流暢
+                const img = new Image();
+                img.src = `assets/img/${bgList[bIdx]}`;
+                img.onload = () => {
+                    bgEl.style.backgroundImage = `url('${img.src}')`;
+                    bIdx = (bIdx + 1) % bgList.length;
+                };
+            }
+        }
+        
+        rotateBG(); 
+        setInterval(rotateBG, 30000); // 每30秒切換一次，增加動態感
+
+        // 科學數值計數器動畫
+        function countUp(id, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const obj = document.getElementById(id);
+                if(obj) {
+                    obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
+                }
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        window.onload = () => { 
+            // 模擬當前公益累積金額，實際可由後台數據寫入
+            countUp("charity-counter", 0, 15820, 2000); 
+        };
     </script>
 </body>
 </html>

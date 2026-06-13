@@ -81,7 +81,7 @@ app.get('/health', (req, res) => {
 // 啟動伺服器
 app.listen(PORT, () => {
     console.log(`========================================`);
-    console.log(`🚀 易鑒星科新版伺服器已啟動`);
+    console.log(`🚀 易鑒星科新版伺服器已啟動 (實地執行版)`);
     console.log(`📍 網址：http://localhost:${PORT}`);
     console.log(`💾 資料庫：SQLite (yidengxingke.db) 已掛載`);
     console.log(`🎨 品牌標誌：XDLS Logo 已就緒`);

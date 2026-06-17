@@ -1,89 +1,168 @@
+require('dotenv').config();
 const express = require('express');
+const { Pool } = require('pg');
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
-const { exec } = require('child_process');
-const fs = require('fs');
-const sequelize = require('./database/database'); // 引入 SQLite 設定
+const fs = require('fs-extra');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+// 安全設定
+app.use(helmet());
+app.use(cors());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
-// 模擬數據庫：5% 公益金與成交單數
-let stats = {
-    charity_fund: 0,
-    total_orders: 0
+// Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  message: { error: 'Too many requests, please try again later.' }
+});
+app.use(limiter);
+
+// PostgreSQL 連線池 (Railway 相容)
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+// WAF 中介層 - 阻擋常見攻擊
+const wafMiddleware = (req, res, next) => {
+  const suspiciousPatterns = [/union\s+select/i, /sqlmap/i, /nmap/i, /--/, /drop table/i, /exec\s*\(/i];
+  const input = JSON.stringify({ ...req.body, ...req.query, ...req.params });
+
+  for (const pattern of suspiciousPatterns) {
+    if (pattern.test(input)) {
+      pool.query(`INSERT INTO security_alerts (ip, path, payload, created_at) VALUES ($1, $2, $3, NOW())`, 
+        [req.ip, req.path, input]);
+      return res.status(403).json({ error: 'Forbidden: Suspicious activity detected.' });
+    }
+  }
+  next();
+};
+app.use(wafMiddleware);
+
+// 流量存證
+app.post('/api/log-traffic', async (req, res) => {
+  try {
+    const { subdomain, path: reqPath, referrer } = req.body;
+    await pool.query(
+      `INSERT INTO traffic_logs (ip, subdomain, path, referrer, created_at) VALUES ($1, $2, $3, $4, NOW())`,
+      [req.ip, subdomain || 'unknown', reqPath || req.path, referrer || 'direct']
+    );
+    res.status(200).json({ status: 'logged' });
+  } catch (e) {
+    res.status(500).json({ error: 'Log failed' });
+  }
+});
+
+// 特權驗證
+const PRIVILEGE_CODES = {
+  'MASTER555': { level: 9, name: '最高管理員' },
+  'WING999': { level: 7, name: '行銷之翼' },
+  'STAR777': { level: 6, name: '星算核心' },
+  'FORTUNE111': { level: 5, name: '財運特權' },
+  'ALLEEN790': { level: 8, name: '系統創建者' }
 };
 
-// 1. 全球階梯定價 API
-app.get('/api/pricing', (req, res) => {
-    res.json({
-        "trial": 888,          // 基礎鑑定
-        "spark": 1280,         // 星火計畫 (需誠信誓約)
-        "quick_detect": 3300,  // 六壬速斷
-        "name_fix": 9900,      // 姓名定格
-        "strategic": 19100,    // 奇門佈局
-        "macro_outlook": 36000 // 易經大略
-    });
+app.post('/api/verify-privilege', async (req, res) => {
+  const { code } = req.body;
+  if (PRIVILEGE_CODES[code]) {
+    res.json({ success: true, data: PRIVILEGE_CODES[code] });
+  } else {
+    res.status(403).json({ success: false, message: '無效特權碼' });
+  }
 });
 
-// 2. 核心鑑定接口
-app.post('/api/calculate', (req, res) => {
-    const { name, birthtime, mode } = req.body;
-    // 實地執行環境下，若無 block7_service.py，則回傳模擬數據
-    const pythonPath = 'python3'; // Linux 環境使用 python3
-    const scriptPath = path.join(__dirname, 'block7_service.py');
-    
-    if (fs.existsSync(scriptPath)) {
-        const cmd = `${pythonPath} "${scriptPath}" "${birthtime}" "${name}" "${mode}"`;
-        exec(cmd, (error, stdout, stderr) => {
-            if (error) {
-                return res.json({ status: "error", message: "演算引擎對沖中..." });
-            }
-            try {
-                const data = JSON.parse(stdout);
-                const price = 1280; 
-                stats.charity_fund += price * 0.05;
-                stats.total_orders += 1;
-                res.json(data);
-            } catch (e) {
-                res.json({ status: "error", message: "解析演算結果失敗" });
-            }
-        });
-    } else {
-        // 模擬回傳
-        const price = 1280;
-        stats.charity_fund += price * 0.05;
-        stats.total_orders += 1;
-        res.json({
-            status: "success",
-            result: `易鑒星科：${name} 的命理分析已完成 [XDLS 模擬模式]`,
-            timestamp: new Date().toISOString()
-        });
-    }
+// 初始化資料庫
+async function initDatabase() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS traffic_logs (
+        id SERIAL PRIMARY KEY,
+        ip TEXT,
+        subdomain TEXT,
+        path TEXT,
+        referrer TEXT,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS crypto_payments (
+        id SERIAL PRIMARY KEY,
+        txid TEXT UNIQUE,
+        amount NUMERIC,
+        currency TEXT,
+        status TEXT,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS project_tracker (
+        id SERIAL PRIMARY KEY,
+        project_name TEXT,
+        status TEXT,
+        progress INTEGER,
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS system_users (
+        id SERIAL PRIMARY KEY,
+        username TEXT UNIQUE,
+        privilege_level INTEGER,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS security_alerts (
+        id SERIAL PRIMARY KEY,
+        ip TEXT,
+        path TEXT,
+        payload TEXT,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS product_pricing (
+        id SERIAL PRIMARY KEY,
+        product_key TEXT UNIQUE,
+        name TEXT,
+        single_price INTEGER,
+        monthly_price INTEGER,
+        quarterly_price INTEGER,
+        yearly_price INTEGER,
+        updated_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    // 預載定價
+    await pool.query(`
+      INSERT INTO product_pricing (product_key, name, single_price, monthly_price, quarterly_price, yearly_price)
+      VALUES 
+        ('yijian_bigdata', '易鑒星科·大數據古法算法公測', 888, 3300, 9900, 36000),
+        ('marketing_wing', '行銷之翼·推播矩陣沙盒工具', 1280, 4200, 11800, 45000)
+      ON CONFLICT (product_key) DO NOTHING;
+    `);
+
+    console.log('✅ 資料庫初始化完成');
+  } catch (err) {
+    console.error('❌ 資料庫初始化失敗:', err);
+  }
+}
+
+// 靜態檔案
+app.use(express.static(path.join(__dirname, 'www')));
+
+// 萬用路由
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'www', 'fortune_main', 'index.html'));
 });
 
-// 3. 公益透明盒數據
-app.get('/api/charity', (req, res) => {
-    res.json(stats);
-});
-
-app.get('/health', (req, res) => {
-    res.status(200).json({
-        status: "active",
-        system: "Edison Star System (易鑒星科)",
-        engine: "XDLS 2.0",
-        database: "SQLite Online",
-        timestamp: new Date().toISOString()
-    });
-});
-
-// 啟動伺服器
-app.listen(PORT, () => {
-    console.log(`========================================`);
-    console.log(`🚀 易鑒星科新版伺服器已啟動 (實地執行版)`);
-    console.log(`📍 網址：http://localhost:${PORT}`);
-    console.log(`💾 資料庫：SQLite (yidengxingke.db) 已掛載`);
-    console.log(`🎨 品牌標誌：XDLS Logo 已就緒`);
-    console.log(`========================================`);
+// 啟動
+initDatabase().then(() => {
+  app.listen(PORT, () => {
+    console.log(`🚀 星算帝國母艦已啟動於端口 ${PORT}`);
+  });
 });

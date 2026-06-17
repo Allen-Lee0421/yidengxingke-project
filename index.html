@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>防彈商用母艦 · Fortune Main</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0f0f0f; color: #e0e0e0; margin: 0; padding: 0; }
+    .container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+    .terms { width: 80%; max-width: 600px; height: 200px; overflow-y: scroll; border: 1px solid #555; padding: 15px; background: #1a1a1a; border-radius: 6px; line-height: 1.6; }
+    button { margin-top: 20px; padding: 12px 24px; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; transition: 0.3s; }
+    button.disabled { background: #555; color: #999; cursor: not-allowed; }
+    button.enabled { background: #00ffcc; color: #000; cursor: pointer; box-shadow: 0 0 12px #00ffcc; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>防彈商用母艦 · Fortune Main</h1>
+    <div class="terms" id="terms">
+      <h3>學術研究與捐贈免責服務條款</h3>
+      <p>本系統僅供學術研究與測試用途，非營利性質。</p>
+      <p>依據台中地方法院規範，本系統提供之所有演算結果，僅供參考，不具法律效力。</p>
+      <p>使用者若自願捐贈，視為非營利支持行為，與商業交易無涉。</p>
+      <p>使用者必須完整閱讀並理解上述條款，並於滾輪滑動至最底部後，方可進入測試。</p>
+      <p>免責聲明：本系統不承擔任何因使用結果所產生之法律或財務責任。</p>
+    </div>
+    <button id="agreeBtn" class="disabled" disabled>我同意上述條款，點擊進入測試</button>
+  </div>
+
+  <script>
+    // 自動 fetch 流量存證
+    fetch('/api/log-traffic', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        subdomain: window.location.hostname,
+        path: window.location.pathname,
+        referrer: document.referrer
+      })
+    }).catch(() => {});
+
+    const terms = document.getElementById('terms');
+    const agreeBtn = document.getElementById('agreeBtn');
+
+    // 🎯 精準判斷滾輪滑動到最底部
+    terms.addEventListener('scroll', () => {
+      if (terms.scrollHeight - terms.scrollTop <= terms.clientHeight + 5) {
+        agreeBtn.disabled = false;
+        agreeBtn.className = 'enabled';
+      }
+    });
+
+    // 點擊觸發
+    agreeBtn.addEventListener('click', () => {
+      alert('已成功簽署消保免責聲明，系統沙盒準備就緒！');
+    });
+  </script>
+</body>
+</html>

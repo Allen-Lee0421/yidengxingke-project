@@ -107,79 +107,72 @@
     </div>
 
     <script>
+        const CONFIG = {
+            formId: "1FAIpQLScShTt4BhVupUMLXFzBNoZ0nfub9qoVyECdEuuDnCI1zmLwkA",
+            entryName: "entry.693170380",
+            entryBirthday: "entry.388768064",
+            entryEmail: "entry.2001221929"
+        };
+
         function showPayment() {
-            if(!document.getElementById('agreeDisclaimer').checked) {
-                alert("請先勾選同意免責聲明");
+            const name = document.getElementById('userName').value.trim();
+            const birthday = document.getElementById('userBirthday').value;
+            const hour = document.getElementById('userHour').value;
+            const email = document.getElementById('userEmail').value.trim();
+            const agreed = document.getElementById('agreeDisclaimer').checked;
+
+            if (!name || !birthday || !email) {
+                alert('請完整填寫姓名、出生日期與 Email。');
                 return;
             }
+            if (!hour) {
+                alert('請選擇出生時辰。');
+                return;
+            }
+            if (!agreed) {
+                alert('請先勾選同意免責聲明。');
+                return;
+            }
+
             document.getElementById('data-section').style.display = 'none';
             document.getElementById('pay-section').style.display = 'block';
+            document.getElementById('pay-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function processPay(method) {
-            // [Item 3, 5] 自動化對接點
-            alert(method + " 支付接口對接中... 系統將提撥 5% 至星燈公益盒");
-            // 未來在此處插入 Google Form 送出與支付跳轉
+            const name = document.getElementById('userName').value.trim();
+            const date = document.getElementById('userBirthday').value;
+            const hourSelect = document.getElementById('userHour');
+            const hourText = hourSelect.options[hourSelect.selectedIndex].text;
+            const email = document.getElementById('userEmail').value.trim();
+            const finalTime = `${date} (${hourText})`;
+
+            const googleFormUrl = `https://docs.google.com/forms/d/e/${CONFIG.formId}/formResponse?` +
+                `${CONFIG.entryName}=${encodeURIComponent(name)}&` +
+                `${CONFIG.entryBirthday}=${encodeURIComponent(finalTime)}&` +
+                `${CONFIG.entryEmail}=${encodeURIComponent(email)}&submit=Submit`;
+            const hiddenIframe = document.createElement('iframe');
+            hiddenIframe.title = '資料提交狀態';
+            hiddenIframe.style.display = 'none';
+            hiddenIframe.src = googleFormUrl;
+            document.body.appendChild(hiddenIframe);
+
+            alert(`【資料已送出】\n\n已記錄 ${method} 付款偏好。正式付款連結尚未配置，客服將依 Email 聯繫您完成結算。`);
         }
-    <script>
-// 核心 ID 映射
-const CONFIG = {
-    formId: "1FAIpQLScShTt4BhVupUMLXFzBNoZ0nfub9qoVyECdEuuDnCI1zmLwkA",
-    entryName: "entry.693170380",
-    entryBirthday: "entry.388768064", // 合併後年月日時
-    entryEmail: "entry.2001221929"
-};
 
-function showPayment() {
-    const name = document.getElementById('userName').value;
-    const email = document.getElementById('userEmail').value;
-    
-    if(!name || !email) {
-        alert("請填寫姓名與 Email 以鎖定數據");
-        return;
-    }
-    if(!document.getElementById('agreeDisclaimer').checked) {
-        alert("請先勾選同意免責聲明");
-        return;
-    }
-    document.getElementById('data-section').style.display = 'none';
-    document.getElementById('pay-section').style.display = 'block';
-}
-
-function processPay(method) {
-    // 1. 準備數據
-    const name = document.getElementById('userName').value;
-    const date = document.getElementById('userBirthday').value;
-    const hourSelect = document.getElementById('userHour');
-    const hourText = hourSelect.options[hourSelect.selectedIndex].text;
-    const email = document.getElementById('userEmail').value;
-
-    // 2. 處理「吉時」邏輯
-    const finalTime = (hourSelect.value === "") ? `${date} (吉時)` : `${date} (${hourText})`;
-
-    // 3. 建立 Google Form 靜默送出連結
-    const googleFormUrl = `https://docs.google.com/forms/d/e/${CONFIG.formId}/formResponse?` +
-        `${CONFIG.entryName}=${encodeURIComponent(name)}&` +
-        `${CONFIG.entryBirthday}=${encodeURIComponent(finalTime)}&` +
-        `${CONFIG.entryEmail}=${encodeURIComponent(email)}&submit=Submit`;
-
-    // 4. 使用隱藏式發送 (不跳轉)
-    const hiddenIframe = document.createElement('iframe');
-    hiddenIframe.style.display = 'none';
-    hiddenIframe.src = googleFormUrl;
-    document.body.appendChild(hiddenIframe);
-
-    // 5. 支付引導
-    alert(`【數據已安全鎖定】\n\n系統正在跳轉至 ${method} 支付網關。\n您的鑑定將自動提撥 5% (NT$ 64) 投入星燈公益計畫。`);
-    
-    // 未來此處接續正式金流跳轉
-}
-
-function switchLang() {
-    const lang = document.getElementById('langSelector').value;
-    // 預留語系切換邏輯
-    console.log("Switching to: " + lang);
-}
-</script>
+        function switchLang() {
+            const lang = document.getElementById('langSelector').value;
+            const copy = {
+                'zh-TW': ['個人時空矩陣鑑定', '選擇鑑定支付管道', 'NT$'],
+                'zh-CN': ['个人时空矩阵鉴定', '选择鉴定支付渠道', '¥'],
+                'en': ['Personal Time-Space Matrix', 'Choose a payment method', '$']
+            }[lang];
+            if (copy) {
+                document.getElementById('main-title').textContent = copy[0];
+                document.getElementById('pay-title').textContent = copy[1];
+                document.getElementById('curr-symbol').textContent = copy[2];
+            }
+        }
+    </script>
 </body>
 </html>

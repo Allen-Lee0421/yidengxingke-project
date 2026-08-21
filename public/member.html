@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>會員中心｜棱曜 Prismatic Luminary</title>
+  <style>
+    :root{color-scheme:dark;--gold:#d9b45b;--ink:#090a0f;--panel:#151823;--muted:#aeb4c2;--danger:#ff9d9d;--ok:#a7efc0}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 18% 10%,#273154 0,#0b0d16 45%,#06070b 100%);color:#f5f2e9;font:16px/1.6 system-ui,"Noto Sans TC",sans-serif}.wrap{width:min(100% - 32px,980px);margin:auto}.top{display:flex;justify-content:space-between;align-items:center;padding:24px 0;border-bottom:1px solid #ffffff1c}.brand{color:var(--gold);letter-spacing:4px;font-weight:700}.top a{color:#fff;text-decoration:none;margin-left:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:48px 0}.card{background:#111522e8;border:1px solid #ffffff22;border-radius:18px;padding:28px;box-shadow:0 18px 60px #0005}.card h1,.card h2{margin-top:0;color:var(--gold)}label{display:block;color:var(--muted);margin:16px 0 6px}input{width:100%;padding:13px 14px;border:1px solid #ffffff2c;border-radius:10px;background:#080a11;color:#fff;font:inherit}button{width:100%;margin-top:20px;padding:13px 16px;border:0;border-radius:10px;background:var(--gold);color:#17130a;font-weight:700;font:inherit;cursor:pointer;transition:transform .16s,filter .16s}button:active{transform:scale(.97)}button:hover{filter:brightness(1.1)}button[disabled]{opacity:.55;cursor:wait}.msg{min-height:28px;margin-top:14px}.msg.error{color:var(--danger)}.msg.ok{color:var(--ok)}.hint{color:var(--muted);font-size:.9rem;margin:8px 0 0}@media(max-width:700px){.grid{grid-template-columns:1fr;margin:28px 0}.top{align-items:flex-start;gap:12px;flex-direction:column}.top a{margin:0 14px 0 0}}
+  </style>
+</head>
+<body>
+  <header class="wrap top"><div class="brand">棱曜 PRISMATIC LUMINARY</div><nav><a href="/">首頁</a><a href="/input.html">開始鑑定</a></nav></header>
+  <main class="wrap">
+    <section class="grid">
+      <form class="card" id="login-form" novalidate>
+        <h1>會員登入</h1>
+        <p class="hint">登入後可保存鑑定紀錄與會員權益。</p>
+        <label for="login-username">會員 ID</label>
+        <input id="login-username" name="username" autocomplete="username" pattern="[A-Za-z0-9]{6,12}" minlength="6" maxlength="12" required>
+        <label for="login-password">密碼</label>
+        <input id="login-password" name="password" type="password" autocomplete="current-password" minlength="8" maxlength="128" required>
+        <button type="submit">登入</button><div class="msg" id="login-msg" aria-live="polite"></div>
+      </form>
+      <form class="card" id="register-form" novalidate>
+        <h2>註冊會員</h2>
+        <p class="hint">會員 ID 必須是 6–12 位英數字；密碼至少 8 位。</p>
+        <label for="register-username">會員 ID</label>
+        <input id="register-username" name="username" autocomplete="username" pattern="[A-Za-z0-9]{6,12}" minlength="6" maxlength="12" required>
+        <label for="register-email">Email</label>
+        <input id="register-email" name="email" type="email" autocomplete="email" maxlength="320" required>
+        <label for="register-password">密碼</label>
+        <input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+        <button type="submit">建立會員</button><div class="msg" id="register-msg" aria-live="polite"></div>
+      </form>
+    </section>
+  </main>
+  <script>
+    const formState = (form, msg) => { [...form.elements].forEach(el => el.disabled = true); msg.className='msg'; msg.textContent='處理中…'; };
+    async function submitAuth(form, action, msg) {
+      if (!form.reportValidity()) return;
+      formState(form,msg);
+      try {
+        const body = Object.fromEntries(new FormData(form)); body.action = action;
+        const response = await fetch('/api/auth', { method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include', body:JSON.stringify(body) });
+        const data = await response.json();
+        msg.textContent = data.message || '服務回應異常'; msg.className = `msg ${data.success ? 'ok' : 'error'}`;
+        if (data.success && action === 'login') setTimeout(() => location.href='/', 600);
+        else [...form.elements].forEach(el => el.disabled = false);
+      } catch (error) { msg.textContent='目前無法連線到會員服務，請稍後再試。'; msg.className='msg error'; [...form.elements].forEach(el => el.disabled = false); }
+    }
+    document.getElementById('login-form').addEventListener('submit', e => { e.preventDefault(); submitAuth(e.currentTarget,'login',document.getElementById('login-msg')); });
+    document.getElementById('register-form').addEventListener('submit', e => { e.preventDefault(); submitAuth(e.currentTarget,'register',document.getElementById('register-msg')); });
+  </script>
+</body>
+</html>

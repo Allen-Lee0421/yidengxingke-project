@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="易鑒星科專屬結果分享頁。">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="xingdeng.tw">
+    <meta property="og:title" content="易鑒星科 · 專屬結果分享卡">
+    <meta property="og:description" content="看看這份免費即時結果，啟動你的個人時空矩陣。">
+    <meta property="og:url" content="https://xingdeng.tw/share.html">
+    <meta property="og:image" content="https://xingdeng.tw/og-preview.png">
+    <title>專屬結果分享卡 · 易鑒星科</title>
+    <style>
+        :root { --gold: #d4af37; --gold-light: #f2d477; --muted: #9ba0aa; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; color: #f4f1e9; background: radial-gradient(circle at 15% 10%, rgba(212,175,55,.16), transparent 30%), radial-gradient(circle at 85% 25%, rgba(92,45,166,.22), transparent 34%), #050608; font-family: "Noto Serif TC", "PingFang TC", "Microsoft JhengHei", serif; }
+        .shell { width: min(760px, calc(100% - 28px)); margin: 0 auto; padding: 24px 0 55px; }
+        .brand { color: var(--gold-light); font: 700 .82rem "Courier New", monospace; letter-spacing: .18em; }
+        .intro { text-align: center; padding: 38px 0 22px; }
+        .intro h1 { color: var(--gold-light); font-size: clamp(1.7rem, 4vw, 2.5rem); letter-spacing: .08em; margin: 0; }
+        .intro p { color: var(--muted); margin: 12px auto 0; max-width: 530px; }
+        .share-card { position: relative; overflow: hidden; min-height: 380px; padding: clamp(26px, 5vw, 46px); border: 1px solid rgba(212,175,55,.65); background: radial-gradient(circle at 82% 14%, rgba(212,175,55,.24), transparent 30%), radial-gradient(circle at 15% 80%, rgba(72,49,150,.3), transparent 38%), linear-gradient(135deg, rgba(14,16,22,.96), rgba(31,22,14,.92)); box-shadow: 0 30px 90px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.11); }
+        .share-card::before { content: ""; position: absolute; inset: 15px; border: 1px solid rgba(242,212,119,.2); }
+        .orbit { position: absolute; width: 300px; height: 300px; right: -100px; top: -110px; border: 1px solid rgba(212,175,55,.22); border-radius: 50%; }
+        .orbit::after { content: ""; position: absolute; inset: 36px; border: 1px solid rgba(120,92,210,.25); border-radius: 50%; }
+        .content { position: relative; z-index: 1; }
+        .kicker { color: var(--gold); font: 700 .78rem "Courier New", monospace; letter-spacing: .16em; }
+        h2 { color: #fff8dc; margin: 18px 0 12px; font-size: clamp(1.65rem, 4vw, 2.65rem); line-height: 1.25; }
+        .summary { color: #d4d5da; font-size: 1.05rem; max-width: 600px; margin: 0; }
+        .metrics { display: flex; align-items: end; gap: 22px; margin-top: 32px; }
+        .score { color: var(--gold-light); font: 700 4rem/1 "Courier New", monospace; }
+        .score small { display: block; color: var(--muted); font: .7rem "Courier New", monospace; letter-spacing: .08em; }
+        .tag { padding: 8px 12px; color: #e2d9bd; border: 1px solid rgba(212,175,55,.45); font: .78rem "Courier New", monospace; }
+        .footer { position: absolute; right: 30px; bottom: 25px; color: rgba(242,212,119,.84); font: .78rem "Courier New", monospace; letter-spacing: .1em; }
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .btn { display: block; padding: 14px 16px; text-align: center; text-decoration: none; border: 1px solid var(--gold); color: var(--gold-light); background: rgba(212,175,55,.08); font-weight: 700; letter-spacing: .06em; }
+        .btn.primary { color: #090909; background: linear-gradient(110deg, var(--gold-light), var(--gold)); }
+        .notice { color: var(--muted); font-size: .78rem; line-height: 1.75; margin-top: 26px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.1); }
+        @media (max-width: 540px) { .actions { grid-template-columns: 1fr; } .share-card { min-height: 420px; } .footer { position: static; margin-top: 34px; } }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <div class="brand">xingdeng.tw</div>
+        <header class="intro">
+            <h1>一張結果卡，打開下一個問題</h1>
+            <p>這是易鑒星科的免費即時體驗結果。想知道自己的矩陣？也可以立即啟動一份。</p>
+        </header>
+        <article class="share-card" aria-labelledby="shareTitle">
+            <div class="orbit" aria-hidden="true"></div>
+            <div class="content">
+                <div class="kicker">EDISON STAR · PERSONAL MATRIX</div>
+                <h2 id="shareTitle">你的結果正在展開</h2>
+                <p id="shareSummary" class="summary">這張卡片由免費即時體驗生成，提供一個可回看的方向提示。</p>
+                <div class="metrics">
+                    <div id="shareScore" class="score">--<small>ENERGY INDEX</small></div>
+                    <div id="shareTag" class="tag">FREE INSIGHT</div>
+                </div>
+            </div>
+            <div class="footer">xingdeng.tw · SHARED RESULT</div>
+        </article>
+        <div class="actions">
+            <a class="btn primary" href="input.html?utm_source=shared_result&utm_medium=referral&utm_campaign=free_experience">啟動我的免費體驗</a>
+            <a class="btn" href="2026-outlook.html?utm_source=shared_result&utm_medium=referral&utm_campaign=matrix">查看 2026 戰略矩陣</a>
+        </div>
+        <p class="notice">免責聲明：本頁內容基於歷史資料整理、演算模型及使用者輸入生成，僅供個人決策與策略參考，不構成法律、醫療、財務、投資或其他專業建議。結果不保證特定事件或收益。</p>
+    </main>
+    <script src="share.js" defer></script>
+</body>
+</html>

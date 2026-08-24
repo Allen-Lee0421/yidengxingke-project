@@ -7,4 +7,5 @@
   <url><loc>https://xingdeng.tw/member.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xingdeng.tw/pay.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://xingdeng.tw/transparency.html</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://xingdeng.tw/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

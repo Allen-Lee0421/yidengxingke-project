@@ -155,6 +155,15 @@ async function initDatabase() {
 // 靜態檔案
 app.use(express.static(path.join(__dirname, 'www')));
 
+// SEO 檔案：必須在萬用路由之前處理，避免 sitemap.xml 被首頁 fallback 吃掉
+app.get('/sitemap.xml', (req, res) => {
+  res.type('application/xml').sendFile(path.join(__dirname, 'www', 'sitemap.xml'));
+});
+
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain').send('User-agent: *\\nAllow: /\\nSitemap: https://xingdeng.tw/sitemap.xml\\n');
+});
+
 // 萬用路由
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'www', 'fortune_main', 'index.html'));

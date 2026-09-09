@@ -1,24 +1,15 @@
-# 使用官方 Node.js 20 映像作為基礎
-FROM node:20
+# syntax=docker/dockerfile:1
+FROM node:20-bookworm-slim
 
-# 設定工作目錄
+ENV NODE_ENV=production
 WORKDIR /app
 
-# 複製所有專案檔案到容器中
-COPY . .
+COPY package*.json ./
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
-# 安裝依賴
-RUN npm install
+COPY --chown=node:node . .
+USER node
 
-# 開放容器的 3000 埠口
 EXPOSE 3000
 
-# 啟動應用程式
-CMD ["npm", "start"]
-
-FROM node:20
-WORKDIR /app
-COPY . .
-RUN npm install
-EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["node", "server.js"]

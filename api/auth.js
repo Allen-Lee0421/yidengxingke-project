@@ -2,6 +2,33 @@ const crypto = require('crypto');
 const { Pool } = require('pg');
 
 let pool;
+const attempts = new Map();
+const ATTEMPT_WINDOW_MS = 15 * 60 * 1000;
+const MAX_ATTEMPTS = 8;
+
+function getClientKey(req, username) {
+  const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  return `${forwarded || req.socket?.remoteAddress || 'unknown'}:${username}`;
+}
+
+function allowAttempt(key) {
+  const now = Date.now();
+  const record = attempts.get(key);
+  if (!record || now - record.startedAt > ATTEMPT_WINDOW_MS) {
+    attempts.set(key, { startedAt: now, count: 1 });
+    return true;
+  }
+  if (record.count >= MAX_ATTEMPTS) return false;
+  record.count += 1;
+  return true;
+}
+
+function clearExpiredAttempts() {
+  const cutoff = Date.now() - ATTEMPT_WINDOW_MS;
+  for (const [key, record] of attempts) if (record.startedAt < cutoff) attempts.delete(key);
+}
+setInterval(clearExpiredAttempts, ATTEMPT_WINDOW_MS).unref();
+
 function getPool() {
   if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not configured');
   if (!pool) pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false }, max: 3, connectionTimeoutMillis: 5000 });
@@ -43,9 +70,11 @@ function validEmail(value) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value); }
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return json(res, 405, { success: false, message: '只接受 POST 請求' });
   const { action, username = '', email = '', password = '' } = req.body || {};
+  if (!['register', 'login'].includes(action)) return json(res, 400, { success: false, message: '不支援的操作' });
   if (!validUsername(username)) return json(res, 400, { success: false, message: '會員 ID 必須是 6–12 位英數字' });
   if (password.length < 8 || password.length > 128) return json(res, 400, { success: false, message: '密碼長度需為 8–128 位' });
   if (action === 'register' && !validEmail(email)) return json(res, 400, { success: false, message: '請輸入有效 Email' });
+  if (!allowAttempt(getClientKey(req, username))) return json(res, 429, { success: false, message: '嘗試次數過多，請 15 分鐘後再試' });
 
   try {
     const db = getPool();

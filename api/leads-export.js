@@ -1,10 +1,11 @@
 const { Pool } = require('pg');
+const crypto = require('crypto');
 
 let pool;
 
 function getPool() {
   if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not configured');
-  if (!pool) pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false }, max: 2 });
+  if (!pool) pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false }, max: 2, connectionTimeoutMillis: 5000 });
   return pool;
 }
 
@@ -22,7 +23,9 @@ module.exports = async function leadsExportHandler(req, res) {
   const expected = String(process.env.ADMIN_EXPORT_TOKEN || '');
   const authorization = String(req.headers.authorization || '');
   const provided = authorization.startsWith('Bearer ') ? authorization.slice(7) : String(req.headers['x-admin-token'] || '');
-  if (!expected || !provided || provided !== expected) return send(res, 401, { success: false, message: '未授權' });
+  const expectedBuffer = Buffer.from(expected);
+  const providedBuffer = Buffer.from(provided);
+  if (!expected || !provided || expectedBuffer.length !== providedBuffer.length || !crypto.timingSafeEqual(expectedBuffer, providedBuffer)) return send(res, 401, { success: false, message: '未授權' });
 
   try {
     const db = getPool();

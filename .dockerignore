@@ -1,0 +1,11 @@
+node_modules
+.git
+.env
+.env.*
+!.env.example
+*.log
+*.zip
+*.mp3
+reports
+__pycache__
+.DS_Store

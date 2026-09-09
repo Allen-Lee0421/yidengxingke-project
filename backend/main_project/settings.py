@@ -24,9 +24,11 @@ if str(BACKEND_DIR) not in sys.path:
 
 load_dotenv(os.path.join(BASE_DIR, '.env')) 
 
-SECRET_KEY = 'django-insecure-test-key-for-development' 
-DEBUG = True
-ALLOWED_HOSTS = ['*'] 
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    raise RuntimeError('DJANGO_SECRET_KEY must be configured')
+DEBUG = os.environ.get('DJANGO_DEBUG', 'false').lower() == 'true'
+ALLOWED_HOSTS = [host.strip() for host in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',') if host.strip()]
 
 
 # ----------------------------------------------------

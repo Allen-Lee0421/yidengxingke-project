@@ -6,41 +6,60 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs-extra');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === 'production';
 
-// 安全設定
-app.use(helmet());
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+// 安全設定：拒絕不必要的跨來源與超大請求，避免常見 DoS／注入入口。
+app.disable('x-powered-by');
+app.set('trust proxy', process.env.TRUST_PROXY === 'true' ? 1 : false);
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; connect-src 'self' https:; upgrade-insecure-requests");
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  if (isProduction) res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  next();
+});
+const allowedOrigins = new Set((process.env.ALLOWED_ORIGINS || '').split(',').map((origin) => origin.trim()).filter(Boolean));
+app.use(cors({ origin: (origin, callback) => {
+  if (!origin || allowedOrigins.has(origin)) return callback(null, true);
+  return callback(new Error('Origin not allowed'));
+}, credentials: true, methods: ['GET', 'POST'], allowedHeaders: ['Content-Type', 'Authorization', 'X-Admin-Token'] }));
+app.use(express.json({ limit: '100kb', strict: true }));
+app.use(express.urlencoded({ extended: false, limit: '50kb' }));
 
 // Rate Limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 300,
+  max: 120,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
   message: { error: 'Too many requests, please try again later.' }
 });
 app.use(limiter);
+const sensitiveLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: 'draft-7', legacyHeaders: false, message: { success: false, message: '操作過於頻繁，請稍後再試' } });
 
 // PostgreSQL 連線池 (Railway 相容)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false },
+  max: 5,
+  connectionTimeoutMillis: 5000,
+  idleTimeoutMillis: 30000
 });
 
 // WAF 中介層 - 阻擋常見攻擊
 const wafMiddleware = (req, res, next) => {
   const suspiciousPatterns = [/union\s+select/i, /sqlmap/i, /nmap/i, /--/, /drop table/i, /exec\s*\(/i];
-  const input = JSON.stringify({ ...req.body, ...req.query, ...req.params });
+  const input = JSON.stringify({ ...req.body, ...req.query, ...req.params }).slice(0, 4096);
 
   for (const pattern of suspiciousPatterns) {
     if (pattern.test(input)) {
-      pool.query(`INSERT INTO security_alerts (ip, path, payload, created_at) VALUES ($1, $2, $3, NOW())`, 
-        [req.ip, req.path, input]);
+      pool.query(`INSERT INTO security_alerts (ip, path, payload, created_at) VALUES ($1, $2, $3, NOW())`,
+        [req.ip, req.path, input]).catch((error) => console.error('security_alert_log_error', error.message));
       return res.status(403).json({ error: 'Forbidden: Suspicious activity detected.' });
     }
   }
@@ -63,18 +82,21 @@ app.post('/api/log-traffic', async (req, res) => {
 });
 
 // 特權驗證
-const PRIVILEGE_CODES = {
-  'MASTER555': { level: 9, name: '最高管理員' },
-  'WING999': { level: 7, name: '行銷之翼' },
-  'STAR777': { level: 6, name: '星算核心' },
-  'FORTUNE111': { level: 5, name: '財運特權' },
-  'ALLEEN790': { level: 8, name: '系統創建者' }
-};
+function getPrivilegeCodes() {
+  try {
+    const parsed = JSON.parse(process.env.PRIVILEGE_CODES_JSON || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
 
-app.post('/api/verify-privilege', async (req, res) => {
+app.post('/api/verify-privilege', sensitiveLimiter, async (req, res) => {
   const { code } = req.body;
-  if (PRIVILEGE_CODES[code]) {
-    res.json({ success: true, data: PRIVILEGE_CODES[code] });
+  const codes = getPrivilegeCodes();
+  const configuredCode = Object.keys(codes).find((candidate) => typeof code === 'string' && candidate.length === code.length && crypto.timingSafeEqual(Buffer.from(candidate), Buffer.from(code)));
+  if (configuredCode) {
+    res.json({ success: true, data: codes[configuredCode] });
   } else {
     res.status(403).json({ success: false, message: '無效特權碼' });
   }

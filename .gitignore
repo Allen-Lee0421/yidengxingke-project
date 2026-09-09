@@ -5,6 +5,11 @@ yarn-error.log
 
 # 環境設定
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
 
 # SQLite 資料庫
 yidengxingke.db

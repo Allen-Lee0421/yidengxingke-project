@@ -4,7 +4,7 @@ const { Pool } = require('pg');
 let pool;
 function getPool() {
   if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not configured');
-  if (!pool) pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false }, max: 3 });
+  if (!pool) pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false }, max: 3, connectionTimeoutMillis: 5000 });
   return pool;
 }
 
@@ -27,8 +27,9 @@ function verifyPassword(password, stored) {
 }
 
 function issueSession(userId, username) {
+  if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) throw new Error('SESSION_SECRET is not configured securely');
   const payload = Buffer.from(JSON.stringify({ userId, username, exp: Date.now() + 7 * 24 * 60 * 60 * 1000 })).toString('base64url');
-  const signature = crypto.createHmac('sha256', process.env.SESSION_SECRET || 'change-me-before-production').update(payload).digest('base64url');
+  const signature = crypto.createHmac('sha256', process.env.SESSION_SECRET).update(payload).digest('base64url');
   return `${payload}.${signature}`;
 }
 

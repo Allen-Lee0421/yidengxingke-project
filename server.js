@@ -177,8 +177,18 @@ async function initDatabase() {
 // 名單收集與管理員匯出 API：與 Vercel /api/* 共用同一套處理器
 const leadsHandler = require('./api/leads');
 const leadsExportHandler = require('./api/leads-export');
+const block7Handler = require('./api/block7');
+const paymentHandler = require('./api/payment');
+const alignHandler = require('./api/align');
+const reportHandler = require('./api/report');
+const healthHandler = require('./api/health');
 app.get('/api/leads/export', leadsExportHandler);
 app.all('/api/leads', leadsHandler);
+app.all('/api/block7', block7Handler);
+app.all('/api/payment', paymentHandler);
+app.all('/api/align', alignHandler);
+app.all('/api/report', reportHandler);
+app.get('/api/health', healthHandler);
 
 // 靜態檔案
 app.use(express.static(path.join(__dirname, 'www')));

@@ -1,11 +1,13 @@
 {
   "name": "star-base-mothership",
-  "version": "2.0.0",
-  "description": "星算帝國 - 完全體防彈商用母艦",
+  "version": "2.1.0",
+  "description": "AuraNexus CosmoSphere platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "check": "node --check server.js && node --check api/block7.js && node --check api/payment.js && node --check api/align.js && node --check api/report.js && node --check api/health.js",
+    "test": "node test/cosmosphere.test.js"
   },
   "dependencies": {
     "express": "^4.19.2",
@@ -18,10 +20,6 @@
     "dotenv": "^16.4.5",
     "express-rate-limit": "^7.4.0"
   },
-  "overrides": {
-    "qs": "^6.16.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "overrides": { "qs": "^6.16.0" },
+  "engines": { "node": ">=18.0.0" }
 }

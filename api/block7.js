@@ -1,0 +1,11 @@
+const TZ='Asia/Taipei';
+const signals=[
+  ['先手就是節奏','把模糊想法切成一個可執行的小步驟。'],
+  ['暗流成形','先保留資源，讓真正重要的決定有空間。'],
+  ['局面換檔','重新排列優先順序，不必追逐所有聲音。'],
+  ['風向打開','把需求說清楚，合作更容易找到入口。']
+];
+function safeText(value,max=80){return typeof value==='string'?value.trim().slice(0,max):''}
+function taipeiParts(date){const p=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(date);return Object.fromEntries(p.filter(x=>x.type!=='literal').map(x=>[x.type,Number(x.value)]))}
+function solarMonth(parts){const key=parts.month*10000+parts.day*100+parts.hour;const boundaries=[[20300,1],[30500,2],[40500,3],[50600,4],[60600,5],[70800,6],[80800,7],[90800,8],[100800,9],[110700,10],[120700,11],[10100,12]];let chosen=12;for(const [threshold,m] of boundaries){if(key>=threshold)chosen=m}return chosen}
+module.exports=async function(req,res){res.setHeader('Cache-Control','no-store');if(req.method!=='POST')return res.status(405).json({status:'ERROR',message:'Only POST is supported'});try{const name=safeText(req.body?.name);const birthDate=safeText(req.body?.birthDate,40);const mode=safeText(req.body?.mode,20)||'daily';if(!name||!birthDate) return res.status(400).json({status:'ERROR',message:'請提供姓名與出生時間'});const parsed=new Date(birthDate);if(Number.isNaN(parsed.getTime()))return res.status(400).json({status:'ERROR',message:'出生時間格式無效'});const parts=taipeiParts(parsed);const month=solarMonth(parts);const seed=Array.from(`${name}|${birthDate}|${mode}`).reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7);const [title,summary]=signals[seed%signals.length];return res.json({status:'SUCCESS',version:'core-v3.0',name,mode,utcOffset:'+08:00',localTime:`${parts.year}-${String(parts.month).padStart(2,'0')}-${String(parts.day).padStart(2,'0')} ${String(parts.hour).padStart(2,'0')}:${String(parts.minute).padStart(2,'0')}:${String(parts.second).padStart(2,'0')}`,solarMonth:month,title,summary,score:68+seed%27,generatedAt:new Date().toISOString()})}catch(error){console.error('block7_error',error.message);return res.status(200).json({status:'FALLBACK',version:'core-v3.0',mode:'daily',solarMonth:1,title:'先回到可行動的一步',summary:'訊號暫時使用安全預設值；請把今天最重要的問題寫下來。',score:70})}}

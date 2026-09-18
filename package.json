@@ -1,11 +1,12 @@
 {
   "name": "star-base-mothership",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "AuraNexus CosmoSphere platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "build:vercel": "node -e \"console.log('AuraNexus static/API build ready')\"",
     "check": "node --check server.js && node --check api/block7.js && node --check api/payment.js && node --check api/align.js && node --check api/report.js && node --check api/health.js",
     "test": "node test/cosmosphere.test.js"
   },
